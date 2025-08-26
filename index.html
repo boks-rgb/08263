@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>💎 미덕 퀴즈</title>
+  <style>
+    body {
+      background-color: #ffeef2;
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+    .question {
+      font-size: 20px;
+      margin: 20px 0;
+    }
+    .options {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .option-button {
+      background-color: white;
+      border: 2px solid #ff66a3;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .option-button:hover {
+      background-color: #ffccdd;
+    }
+    .feedback {
+      font-weight: bold;
+      margin: 20px 0;
+    }
+    .level {
+      font-size: 18px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>💎 미덕 퀴즈</h1>
+  <p class="question" id="question">뜻을 보고 알맞은 미덕을 골라보세요!</p>
+
+  <div class="options" id="options"></div>
+
+  <p class="feedback" id="feedback"></p>
+
+  <div class="level">
+    ✨ 나의 미덕 포인트: <span id="points">0</span><br>
+    현재 레벨: <span id="level">🌱 새싹</span>
+  </div>
+
+  <script>
+    const virtueNames = [
+      "감사", "배려", "유연성", "창의성",
+      "결의", "봉사", "이상품기", "책임감",
+      "겸손", "사랑", "이해", "청결",
+      "관용", "사려", "인내", "초연",
+      "근면", "상냥함", "인정", "충직",
+      "기뻐함", "소신", "자율", "친절",
+      "기지", "신뢰", "절도", "탁월함",
+      "끈기", "신용", "정돈", "평온함",
+      "너그러움", "열정", "정의로움", "한결같음",
+      "도움", "예의", "정직", "헌신",
+      "명예", "용기", "존중", "협동",
+      "목적의식", "용서", "중용", "화합",
+      "믿음직함", "우의", "진실함", "확신"
+    ];
+
+    const meanings = virtueNames.map(name => ({ name, meaning: `${name}의 의미를 학습 중이에요.` }));
+
+    const levels = [
+      { name: "새싹", emoji: "🌱", min: 0 },
+      { name: "무지개", emoji: "🌈", min: 5 },
+      { name: "보석", emoji: "💎", min: 10 },
+      { name: "별빛", emoji: "🌟", min: 20 },
+      { name: "왕자", emoji: "👑", min: 30 },
+    ];
+
+    let points = parseInt(localStorage.getItem("points") || "0");
+    let current;
+
+    const questionEl = document.getElementById("question");
+    const optionsEl = document.getElementById("options");
+    const feedbackEl = document.getElementById("feedback");
+    const pointsEl = document.getElementById("points");
+    const levelEl = document.getElementById("level");
+
+    function shuffle(array) {
+      return array.slice().sort(() => Math.random() - 0.5);
+    }
+
+    function newQuestion() {
+      current = meanings[Math.floor(Math.random() * meanings.length)];
+      questionEl.textContent = `뜻: ${current.meaning}`;
+
+      optionsEl.innerHTML = "";
+      virtueNames.forEach(name => {
+        const btn = document.createElement("button");
+        btn.textContent = name;
+        btn.className = "option-button";
+        btn.onclick = () => checkAnswer(name);
+        optionsEl.appendChild(btn);
+      });
+
+      updateProgress();
+    }
+
+    function checkAnswer(selected) {
+      if (selected === current.name) {
+        points++;
+        localStorage.setItem("points", points);
+        feedbackEl.textContent = "정답이에요! 💎";
+      } else {
+        feedbackEl.textContent = `아쉬워요! 정답은 "${current.name}"`;
+      }
+
+      setTimeout(() => {
+        feedbackEl.textContent = "";
+        newQuestion();
+      }, 1500);
+    }
+
+    function updateProgress() {
+      pointsEl.textContent = points;
+      const level = levels.reduce((acc, lvl) => points >= lvl.min ? lvl : acc, levels[0]);
+      levelEl.textContent = `${level.emoji} ${level.name}`;
+    }
+
+    newQuestion();
+  </script>
+</body>
+</html>
